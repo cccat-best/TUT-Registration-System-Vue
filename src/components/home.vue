@@ -2,10 +2,10 @@
   <div class="home">
     <div class="headwz">欢迎来到天津理工大学组织报名管理后台 !</div>
     <div class="call">
-        <h2>若平台出现错误请联系 ：</h2>
-        <h3>电话：022 - 666 - 6666</h3>
-        <h3>QQ 交流群：361172757</h3>
-        <h3>地址：7号楼115实验室</h3>
+        <h2>若平台出现错误请联系 : </h2>
+        <h3>电话: 022 - 666 - 6666</h3>
+        <h3>QQ 交流群: 361172757</h3>
+        <h3>地址: 7号楼115实验室</h3>
     </div>
     <div class="weather">
         <iframe scrolling="no" src="https://tianqiapi.com/api.php?style=ya&skin=pitaya" 

@@ -29,40 +29,60 @@
           username:'',
           password:'',
         },
-        message:'',
+        code:'',
       }
     },
-    
-    methods: {
-      
-      back(){
 
-        this.$axios({
-          method:"POST",
-          baseURL:"http://47.94.90.140:8000/",
-          url:'/login',
-          data:this.form,
-          headers: {
-              "content-type": "application/json"
-          },          
-        })
-          .then((val) => {
-              sessionStorage.setItem("token", val.data.data.token);
-              // console.log(val.data.message);
-              this.message = val.data.message;
+    methods:{  
+      back() {
+        const url = "/login";
+        let post = this.$http.post(url, this.form);
+        post.then((res)=>{
+            this.code = res.data.code;
+   
+            if(this.code === '0000'){
+              sessionStorage.setItem("token", res.data.data.token);
               this.$router.push("/back/home");
-          })
+            }       
+            if(this.code != '0000'){
+              alert(res.data.message);             
+            } 
 
-          .catch((err) => {
-              console.log(err);
-              alert("用户名或密码错误");
-          });
-
-      },     
+        }).catch((err)=>{
+            console.log(err)       
+        })
+      },
     },
+  
+    // methods:{
+    //   back(){
+    //       this.$axios({
+    //         method:"POST",
+    //         baseURL:"http://47.94.90.140:8000/",
+    //         url:'/login',
+    //         data:this.form,
+    //         headers: {
+    //             "content-type": "application/json"
+    //         },          
+    //       })
+    //         .then((val) => {
+    //             sessionStorage.setItem("token", val.data.data.token);
+    //             // console.log(val.data.message);
+    //             this.message = val.data.message;
+    //             this.$router.push("/back/home");
+    //         })
+
+    //         .catch((err) => {
+    //             console.log(err);
+    //             alert("用户名或密码错误");
+    //         });
+    //   },
+    // },
+    
+  
     beforeRouteLeave (to, from, next) {
       if(to.path === "/back" || to.path === "/back/home" || to.path === "/back/stuInfo" || to.path === "/back/ann"){
-        if(this.message === '请求成功'){
+        if(this.code === '0000'){
             next();
         }
         else{

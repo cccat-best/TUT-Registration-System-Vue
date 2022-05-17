@@ -1,6 +1,6 @@
 <template>
   <div>
-  <a-table :columns="columns" :data-source="data" bordered  :pagination="{ pageSize: 5 }" >
+  <a-table :columns="columns" :data-source="data" bordered   :pagination="{ pageSize: 5 }" >
     <template
       v-for="col in ['major','classNum','StdQQ', 'StdPho','organization1','branch1','reason1','organization2','branch2','reason2']"
       :slot="col"
@@ -166,82 +166,42 @@ export default {
       if (target || targetCache) {
         delete target.editable;
         this.data = newData;
-        // Object.assign(targetCache, target);
-        // this.cacheData = newCacheData;
       }
 
+      let url = "/post";
+      let change = {
+        stdId:StdId.trim(),
+        stdName:StdName.trim(),
+        major:major.trim(),
+        classNum:classNum.trim(),
+        stdQQ:StdQQ.trim(),
+        stdPhone:StdPho.trim(),
+        firstWill: {
+          organization:organization1.trim(),
+          branch:branch1.trim(),
+          reason:reason1.trim(),
+        },
+        secondWill: {
+          organization:organization2.trim(),
+          branch:branch2.trim(),
+          reason:reason2.trim(),
+        },
+        isDispensing:'',      
+      }
 
-       let stdId = JSON.stringify(StdId);
-        let StdId11 = stdId&&JSON.parse(stdId);
-
-        let stdName = JSON.stringify(StdName);
-        let StdName11 = stdName&&JSON.parse(stdName);
-
-        // let StdQQ11 = JSON.stringify(StdQQ);
-        // let StdPho11 = JSON.stringify(StdPho);
-
-        let major0 = JSON.stringify(major);
-        let major11 = major0&&JSON.parse(major0);
-
-        let classNum0 = JSON.stringify(classNum);
-        let classNum11 = classNum0&&JSON.parse(classNum0);
-        
-        let organization10 = JSON.stringify(organization1);
-        let organization11 = organization10&&JSON.parse(organization10);
-        let branch10 = JSON.stringify(branch1);
-        let branch11 = branch10&&JSON.parse(branch10);
-        let reason10 = JSON.stringify(reason1);
-        let reason11 = reason10&&JSON.parse(reason10);
-
-        let organization20 = JSON.stringify(organization2);
-        let organization22 = organization20&&JSON.parse(organization20);
-        let branch20 = JSON.stringify(branch2);
-        let branch22 = branch20&&JSON.parse(branch20);
-        let reason20 = JSON.stringify(reason2);
-        let reason22 = reason20&&JSON.parse(reason20);
-
-      this.$axios({
-          method:"POST",
-          baseURL:"http://47.94.90.140:8000/",
-          url:'/post',
-          data:{
-              stdId:StdId11.trim(),
-              stdName:StdName11.trim(),
-              major:major11.trim(),
-              classNum:classNum11.trim(),
-              stdQQ:StdQQ.trim(),
-              stdPhone:StdPho.trim(),
-              firstWill: {
-                  organization:organization11.trim(),
-                  branch:branch11.trim(),
-                  reason:reason11.trim(),
-              },
-              secondWill: {
-                  organization:organization22.trim(),
-                  branch:branch22.trim(),
-                  reason:reason22.trim(),
-              },
-              isDispensing:'',
-
-          },
-          headers: {
-              "content-type": "application/json"
-          },          
-        })
-          .then((val) => {
-             
-              if(val.data.message === '请求成功'){
-                  alert("信息修改成功!");
-              }else{
-                  alert("信息修改失败!");
-              }
-
-          })
-          .catch((err) => {
-              console.log(err);
+      let post = this.$http.post(url, change);  
+      post.then((val) => {
+          
+          if(val.data.code === '0000'){
+              alert("信息修改成功!");
+          }else{
               alert("信息修改失败!");
-          });     
+          }
 
+      }).catch((err) => {
+          console.log(err);
+          alert("信息修改失败!");
+      })    
     },
     cancel(key) {
       const newData = [...this.data];
@@ -256,52 +216,35 @@ export default {
   },
 
   created(){
+    let url = "/getAllStuInfo?page=1&pageSize=35";
+    let Token = {token:sessionStorage.getItem('token')};
 
-  this.$axios({
-    
-            method:"POST",
-            baseURL:"http://47.94.90.140:8000/",
-            url:'/getAllStuInfo',
-            params:{
-              page:1,
-              pageSize:35,
+    let post = this.$http.post(url, Token);
+    post.then((response)=> {
+      this.total = response.data.data.total;
+      this.student0 =  response.data.data.students;
 
-            },
-            data:{token:sessionStorage.getItem('token')},
-            headers: {
-                "content-type": "application/json"
-            },          
-          })
-          
-          .then(response=> {
-            // console.log(response.data.message);
-            var total = response.data.data.total;
-            this.total = total;
-            var students = response.data.data.students;
-            this.student0 =  students;
+      for (let i = 0; i < this.total; i++) {
+        data.push({
 
-            for (let i = 0; i < this.total; i++) {
-              data.push({
-
-                key: i.toString(),
-                StdId: ` ${this.student0[i].stdId}`,
-                StdName: ` ${this.student0[i].stdName}`,
-                major: ` ${this.student0[i].major}`,
-                classNum: ` ${this.student0[i].classNum}`,
-                StdQQ: ` ${this.student0[i].stdQQ}`,
-                StdPho: ` ${this.student0[i].stdPhone}`,
-                organization1: ` ${this.student0[i].firstWill.organization}`,
-                branch1: ` ${this.student0[i].firstWill.branch}`,
-                reason1: ` ${this.student0[i].firstWill.reason}`,
-                organization2: ` ${this.student0[i].secondWill.organization}`,
-                branch2: ` ${this.student0[i].secondWill.branch}`,
-                reason2: ` ${this.student0[i].secondWill.reason}`,               
-              });
-            }
-          })
-          .catch(error=>{
-            console.log(error);
-          });
+          key: i.toString(),
+          StdId: ` ${this.student0[i].stdId}`,
+          StdName: ` ${this.student0[i].stdName}`,
+          major: ` ${this.student0[i].major}`,
+          classNum: ` ${this.student0[i].classNum}`,
+          StdQQ: ` ${this.student0[i].stdQQ}`,
+          StdPho: ` ${this.student0[i].stdPhone}`,
+          organization1: ` ${this.student0[i].firstWill.organization}`,
+          branch1: ` ${this.student0[i].firstWill.branch}`,
+          reason1: ` ${this.student0[i].firstWill.reason}`,
+          organization2: ` ${this.student0[i].secondWill.organization}`,
+          branch2: ` ${this.student0[i].secondWill.branch}`,
+          reason2: ` ${this.student0[i].secondWill.reason}`,               
+        });
+      }
+    }).catch((error)=>{
+      console.log(error);
+    })
  },
 };
 

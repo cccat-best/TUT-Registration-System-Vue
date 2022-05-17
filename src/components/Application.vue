@@ -6,40 +6,40 @@
     <el-form ref="form" :model="form" label-width="80px" label-position="left" :rules="rules">
         <h4>个人信息</h4>
 
-        <el-form-item label="学号" prop="stuId" >
+        <el-form-item label="学号" prop="stdId" >
             <el-input
                 placeholder="请输入学号"
-                v-model="form.stuId"
+                v-model="form.stdId"
                 class="in"
                 >
                 <i slot="suffix" class="el-input__icon el-icon-info"></i>
             </el-input>
         </el-form-item>
 
-        <el-form-item label="姓名" prop="stuName">
+        <el-form-item label="姓名" prop="stdName">
             <el-input
                 placeholder="请输入姓名"
-                v-model="form.stuName"
+                v-model="form.stdName"
                 class="in"
                 >
                 <i slot="suffix" class="el-input__icon el-icon-user"></i>
             </el-input>
         </el-form-item>
 
-        <el-form-item label="QQ" prop="stuQQ">
+        <el-form-item label="QQ" prop="stdQQ">
             <el-input
                 placeholder="请输入QQ号"
-                v-model="form.stuQQ"
+                v-model="form.stdQQ"
                 class="in"
                 >
                 <i slot="suffix" class="el-input__icon el-icon-chat-round"></i>
             </el-input>
         </el-form-item>
 
-        <el-form-item label="手机" prop="stuPhone">
+        <el-form-item label="手机" prop="stdPhone">
             <el-input
                 placeholder="请输入手机号"
-                v-model="form.stuPhone"
+                v-model="form.stdPhone"
                 class="in"
                 >
                 <i slot="suffix" class="el-input__icon el-icon-mobile-phone"></i>
@@ -50,7 +50,7 @@
 
         <el-form-item label="专业班级" prop="class_value">
              <el-cascader
-                v-model="form.class_value"
+                v-model="class_value"
                 placeholder="请选择专业与班级"
                 :options="class_options"
                 :props="{ expandTrigger: 'hover' }"
@@ -63,7 +63,7 @@
 
         <el-form-item label="第一志愿" prop="firstWill">
              <el-cascader
-                v-model="form.firstWill"
+                v-model="first_will"
                 placeholder="请选择第一志愿"
                 :options="first_options"
                 :props="{ expandTrigger: 'hover' }"
@@ -73,24 +73,23 @@
         </el-form-item>
 
         <el-form-item label="原因" prop="rea1">
-            <el-input type="textarea" placeholder="请输入原因" v-model="form.rea1"></el-input>
+            <el-input type="textarea" placeholder="请输入原因" v-model="form.firstWill.reason"></el-input>
         </el-form-item>
 
         <h4>第二志愿</h4>
 
         <el-form-item label="第二志愿">
              <el-cascader
-                v-model="form.secondWill"
+                v-model="second_will"
                 placeholder="请选择第二志愿"
                 :options="first_options"
                 :props="{ expandTrigger: 'hover' }"
-               
             >
             </el-cascader>
         </el-form-item>
 
         <el-form-item label="原因" prop="rea2">
-            <el-input type="textarea" placeholder="请输入原因" v-model="form.rea2"></el-input>
+            <el-input type="textarea" placeholder="请输入原因" v-model="form.secondWill.reason"></el-input>
         </el-form-item>
 
         <h4>是否同意调剂</h4>
@@ -112,17 +111,28 @@
     name: 'Application',
     data() {
         return {
-             form: {
-                stuId: '',
-                stuName: '',
-                stuQQ: '',
-                stuPhone: '',
-                class_value: [],
-                firstWill:[],              
-                rea1:'',
-                secondWill:[],
-                rea2:'',
-                isDispensing:true,
+            class_value:[],
+            first_will:[],
+            second_will:[],
+
+            form: {
+              stdId:'',
+              stdName:'',
+              major:'',
+              classNum:'',
+              stdQQ:'',
+              stdPhone:'',
+              firstWill: {
+                organization:'',
+                branch:'',
+                reason:'',
+              },
+              secondWill: {
+                organization:'',
+                branch:'',
+                reason:'',
+              },
+              isDispensing:'',
 
             },
             class_options: [
@@ -327,17 +337,17 @@
                     }
                 ],
             rules:{
-                stuId: [{ 
+                stdId: [{ 
                     required: true, message: '请输入学号', trigger: 'blur' 
                 }],
-                stuName:[{
+                stdName:[{
                     required: true, message: '请输入姓名', trigger: 'blur' 
                 }],
-                stuQQ:[
+                stdQQ:[
                     {required: true, message: '请输入QQ号', trigger: 'blur' },
                     {min:5,max:11,message: '请输入正确的QQ号', trigger: 'blur'}
                 ],
-                stuPhone:[
+                stdPhone:[
                     { required: true, message: '请输入手机号', trigger: 'blur' },
                     {len:11, message: '请输入正确的手机号码', trigger: 'blur' }
                 ],
@@ -358,93 +368,31 @@
           })
       },       
       onSubmit() {
-        // console.log('submit!'+ JSON.stringify(this.form));
-        let stdId = JSON.stringify(this.form.stuId);
-        let stdId0 = stdId&&JSON.parse(stdId);
 
-        let stdName = JSON.stringify(this.form.stuName);
-        let stdName0 = stdName&&JSON.parse(stdName);
+        this.form.major = this.class_value[0];
+        this.form.classNum = this.class_value[1];
 
+        this.form.firstWill.organization = this.first_will[0];
+        this.form.firstWill.branch = this.first_will[1];
 
-        let stdQQ = JSON.stringify(this.form.stuQQ);
-        let stdQQ0 = stdQQ&&JSON.parse(stdQQ);
+        this.form.secondWill.organization = this.second_will[0];
+        this.form.secondWill.branch = this.second_will[1];
 
-        let stdPhone = JSON.stringify(this.form.stuPhone);
-        let stdPhone0 = stdPhone&&JSON.parse(stdPhone);
+        const url = '/post';
+        let post = this.$http.post(url, this.form);
 
-        let major = JSON.stringify(this.form.class_value[0]);
-        let major0 = major&&JSON.parse(major);
-
-        let classNum = JSON.stringify(this.form.class_value[1]);
-        let classNum0 = classNum&&JSON.parse(classNum);
-        
-
-        let organization1 = JSON.stringify(this.form.firstWill[0]);
-        let organization10 = organization1&&JSON.parse(organization1);
-        let branch1 = JSON.stringify(this.form.firstWill[1]);
-        let branch10 = branch1&&JSON.parse(branch1);
-        let reason1 = JSON.stringify(this.form.rea1);
-        let reason10 = reason1&&JSON.parse(reason1);
-
-
-
-        let organization2 = JSON.stringify(this.form.secondWill[0]);
-        let organization20 = organization2&&JSON.parse(organization2);
-        let branch2 = JSON.stringify(this.form.secondWill[1]);
-        let branch20 = branch2&&JSON.parse(branch2);
-        let reason2 = JSON.stringify(this.form.rea2);
-        let reason20 = reason2&&JSON.parse(reason2);
-
-        let isDispensing = JSON.stringify(this.form.isDispensing);
-
-        
-
-        this.$axios({
-          method:"POST",
-          baseURL:"http://47.94.90.140:8000/",
-          url:'/post',
-          data:{
-              stdId:stdId0,
-              stdName:stdName0,
-              major:major0,
-              classNum:classNum0,
-              stdQQ:stdQQ0,
-              stdPhone:stdPhone0,
-              firstWill: {
-                  organization:organization10,
-                  branch:branch10,
-                  reason:reason10,
-              },
-              secondWill: {
-                  organization:organization20,
-                  branch:branch20,
-                  reason:reason20,
-              },
-              isDispensing:isDispensing,
-
-          },
-          headers: {
-              "content-type": "application/json"
-          },          
-        })
-          .then((val) => {
-
-              if(val.data.message === '请求成功'){
+        post.then((val) => {
+              if(val.data.code === '0000'){
                   alert("恭喜,报名成功!");
               }else{
                   alert("抱歉,报名失败!" + ' ' + val.data.message + "!");
               }
-            
-             
-
-          })
-          .catch((err) => {
+    
+          }).catch((err) => {
               console.log(err);
               alert("抱歉,报名失败!");
-          });        
+          })      
       },
-
-      
     },
 
   }
